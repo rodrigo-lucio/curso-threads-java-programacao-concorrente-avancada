@@ -9,8 +9,8 @@ public class ClienteTarefas {
 
     public static void main(String[] args) throws Exception {
 
-        Socket socket = new Socket("localhost", 12346);
-        System.out.println("Conex„o estabelecida");
+        Socket socket = new Socket("localhost", 12345);
+        System.out.println("Conex√£o estabelecida");
 
         Thread enviaComando = new Thread(() -> {
 
@@ -56,9 +56,9 @@ public class ClienteTarefas {
         enviaComando.start();
         recebeRespostaServidor.start();
         
-        //Dizemos para a Thread main se juntar a essa thread envia comando, e sÛ apÛs ela encerrar, o socket.close È executado
+        //Dizemos para a Thread main se juntar a essa thread envia comando, e s√≥ ap√≥s ela encerrar, o ser√° executado as linhas abaixo
         enviaComando.join();
-        System.out.println("Conex„o encerrada");
+        System.out.println("Conex√£o encerrada");
         socket.close();
 
     }
