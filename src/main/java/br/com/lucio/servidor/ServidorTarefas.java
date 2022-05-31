@@ -13,10 +13,10 @@ public class ServidorTarefas {
         ServerSocket servidor = new ServerSocket(12346);
         
         //Numero fixo de duas threads no programa
-        ExecutorService threadPool = Executors.newFixedThreadPool(2);
+        //ExecutorService threadPool = Executors.newFixedThreadPool(2);
 
         //Esse thread pool cresce/diminui dinamicamente
-        //ExecutorService threadPool = Executors.newCachedThreadPool();
+        ExecutorService threadPool = Executors.newCachedThreadPool();
         
         while(true) {
             Socket socket = servidor.accept();
