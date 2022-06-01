@@ -38,11 +38,11 @@ public class DistribuidorTarefas implements Runnable {
 	
 					case "fim":
 						saidaParaCliente.println("Desligando o servidor");
+						servidorTarefas.parar();
 						break;
 	
 					default:
-						saidaParaCliente.println("Confirmação " + comando + " nãoo encontrado");
-						servidorTarefas.parar();
+						saidaParaCliente.println("Comando " + comando + " não encontrado");
 						break;
 				}
                 
