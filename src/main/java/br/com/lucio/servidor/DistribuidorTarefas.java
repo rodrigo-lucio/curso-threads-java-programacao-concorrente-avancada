@@ -3,14 +3,17 @@ package br.com.lucio.servidor;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
 
 public class DistribuidorTarefas implements Runnable {
 
     private Socket socket;
 	private ServidorTarefas servidorTarefas;
+	private ExecutorService threadPool;
 
-    public DistribuidorTarefas(Socket socket, ServidorTarefas servidorTarefas) {
-        this.socket = socket;
+    public DistribuidorTarefas(ExecutorService threadPool, Socket socket, ServidorTarefas servidorTarefas) {
+        this.threadPool = threadPool;
+		this.socket = socket;
 		this.servidorTarefas = servidorTarefas;
     }
 
@@ -20,7 +23,7 @@ public class DistribuidorTarefas implements Runnable {
             
             System.out.println("Distribuindo tarefa cliente na porta: " + this.socket);
             
-            PrintStream saidaParaCliente = new PrintStream(socket.getOutputStream()) ;
+            PrintStream saidaCliente = new PrintStream(socket.getOutputStream()) ;
             
             Scanner scanner = new Scanner(socket.getInputStream());
             while(scanner.hasNextLine()) {
@@ -29,26 +32,30 @@ public class DistribuidorTarefas implements Runnable {
                 
 				switch (comando) {
 					case "c1":
-						saidaParaCliente.println("Confirmação comando " + comando);
+						saidaCliente.println("Confirmação comando " + comando);
+						ComandoC1 c1 = new ComandoC1(saidaCliente);
+						this.threadPool.execute(c1);
 						break;
 	
 					case "c2":
-						saidaParaCliente.println("Confirmação comando " + comando);
+						saidaCliente.println("Confirmação comando " + comando);
+						ComandoC2 c2 = new ComandoC2(saidaCliente);
+						this.threadPool.execute(c2);
 						break;
 	
 					case "fim":
-						saidaParaCliente.println("Desligando o servidor");
+						saidaCliente.println("Desligando o servidor");
 						servidorTarefas.parar();
 						break;
 	
 					default:
-						saidaParaCliente.println("Comando " + comando + " não encontrado");
+						saidaCliente.println("Comando " + comando + " não encontrado");
 						break;
 				}
                 
             }
             
-            saidaParaCliente.close();
+            saidaCliente.close();
             
 //            Thread.sleep(5000);
             
