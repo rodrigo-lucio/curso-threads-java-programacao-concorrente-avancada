@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 public class DistribuidorTarefas implements Runnable {
 
@@ -32,15 +33,11 @@ public class DistribuidorTarefas implements Runnable {
                 
 				switch (comando) {
 					case "c1":
-						saidaCliente.println("Confirmação comando " + comando);
-						ComandoC1 c1 = new ComandoC1(saidaCliente);
-						this.threadPool.execute(c1);
+						comandoC1(saidaCliente, comando);
 						break;
 	
 					case "c2":
-						saidaCliente.println("Confirmação comando " + comando);
-						ComandoC2 c2 = new ComandoC2(saidaCliente);
-						this.threadPool.execute(c2);
+						comandoC2(saidaCliente, comando);
 						break;
 	
 					case "fim":
@@ -65,5 +62,27 @@ public class DistribuidorTarefas implements Runnable {
             throw new RuntimeException(e);
         }
     }
+    
+	private void comandoC1(PrintStream saidaCliente, String comando) {
+		saidaCliente.println("Confirmação comando " + comando);
+		ComandoC1 c1 = new ComandoC1(saidaCliente);
+		this.threadPool.execute(c1);
+	}
+
+
+	private void comandoC2(PrintStream saidaCliente, String comando) {
+		//Com as classes C2 implementando o Callable, conseguimos ter um retorno da thread
+		
+		saidaCliente.println("Confirmação comando " + comando);
+		ComandoC2ChamaWS c2ws = new ComandoC2ChamaWS(saidaCliente);
+		ComandoC2AcessaBanco c2bd = new ComandoC2AcessaBanco(saidaCliente);
+
+		Future<String> futureWS = this.threadPool.submit(c2ws);
+		Future<String> futureBD = this.threadPool.submit(c2bd);
+		
+		this.threadPool.submit(new AguardaResultadosFutureWSFutureBancoDados(futureWS, futureBD, saidaCliente));
+		
+	}
+
 
 }
