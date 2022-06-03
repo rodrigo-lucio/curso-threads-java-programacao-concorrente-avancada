@@ -17,9 +17,9 @@ public class ServidorTarefas {
 	public ServidorTarefas() throws IOException {
         System.out.println("Iniciando servidor:");
         this.servidor = new ServerSocket(12345);
-//        this.threadPool = Executors.newCachedThreadPool(); 
-        this.threadPool = Executors.newFixedThreadPool(4); 
         //Esse thread pool cresce/diminui dinamicamente
+//        this.threadPool = Executors.newCachedThreadPool(); 
+        this.threadPool = Executors.newFixedThreadPool(4, new FabricaDeThreads()); 
         
         //Numero fixo de duas threads no programa
         //ExecutorService threadPool = Executors.newFixedThreadPool(2);

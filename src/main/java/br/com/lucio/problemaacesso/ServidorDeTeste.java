@@ -1,5 +1,7 @@
 package br.com.lucio.problemaacesso;
 
+import br.com.lucio.servidor.TratadorExecao;
+
 public class ServidorDeTeste {
 
 	/*
@@ -29,12 +31,16 @@ public class ServidorDeTeste {
 	}
 
 	private void rodar() {
-		new Thread(new Runnable() {
+		Thread thread = new Thread(new Runnable() {
 
 			public void run() {
 				System.out.println("Servidor começando, estaRodando = " + estaRodando);
 
 				while (!estaRodando) {
+				}
+				
+				if(estaRodando) {
+					throw new RuntimeException("Deu problema na execução da Thread.");
 				}
 
 				System.out.println("Servidor rodando, estaRodando = " + estaRodando);
@@ -44,7 +50,11 @@ public class ServidorDeTeste {
 
 				System.out.println("Servidor terminando, estaRodando = " + estaRodando);
 			}
-		}).start();
+		});
+		
+		//Chamamos essa classe TratadorExecao, quando uma exception nao tratada estoura na thread
+		thread.setUncaughtExceptionHandler(new TratadorExecao());
+		thread.start();
 	}
 
 	private void alterandoAtributo() throws InterruptedException {
