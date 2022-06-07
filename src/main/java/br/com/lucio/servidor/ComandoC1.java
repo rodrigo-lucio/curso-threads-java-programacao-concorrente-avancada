@@ -23,6 +23,7 @@ public class ComandoC1 implements Runnable {
 		}
 		
 		saidaCliente.println("Comando " + this.getClass().getSimpleName() + " executado");
+		System.out.println("Comando " + this.getClass().getSimpleName() + " executado");
 		
 //		Ao lançar essa exception, cairia tudo na Nossa fabrica de threads, que criou o Tratador de exeção para exeptions inesperadas
 //		throw new RuntimeException("problema ");

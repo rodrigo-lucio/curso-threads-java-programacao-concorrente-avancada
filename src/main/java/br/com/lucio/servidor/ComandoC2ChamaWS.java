@@ -22,7 +22,8 @@ public class ComandoC2ChamaWS implements Callable<String> {
 
 		int numeroAleatorio = new Random().nextInt(10000);
 		saidaCliente.println("Comando " + this.getClass().getSimpleName() + " executado");
-
+		System.out.println("Comando " + this.getClass().getSimpleName() + " executado");
+		
 		return "Resposta numero aleatorio de " + this.getClass().getSimpleName() + ": " + String.valueOf(numeroAleatorio);
 	}
 
