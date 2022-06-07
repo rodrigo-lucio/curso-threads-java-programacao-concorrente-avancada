@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Iterator;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -13,20 +16,25 @@ public class ServidorTarefas {
 	private ServerSocket servidor;
 	private ExecutorService threadPool;
 	private AtomicBoolean estaRodando;
-
+	private BlockingQueue<String> filaComandos;
+	
 	public ServidorTarefas() throws IOException {
         System.out.println("Iniciando servidor:");
         this.servidor = new ServerSocket(12345);
-        //Esse thread pool cresce/diminui dinamicamente
-//        this.threadPool = Executors.newCachedThreadPool(); 
-        this.threadPool = Executors.newFixedThreadPool(4, new FabricaDeThreads()); 
+        // Esse thread pool cresce/diminui dinamicamente
+        this.threadPool = Executors.newCachedThreadPool(); 
+        // this.threadPool = Executors.newFixedThreadPool(4, new FabricaDeThreads()); 
         
-        //Numero fixo de duas threads no programa
-        //ExecutorService threadPool = Executors.newFixedThreadPool(2);
+        // Numero fixo de duas threads no programa
+        // ExecutorService threadPool = Executors.newFixedThreadPool(2);
         
         this.estaRodando = new AtomicBoolean(true);
+        this.filaComandos = new ArrayBlockingQueue<>(2);
+        
+        iniciarConsumidor();
 	}
-	
+
+
     public static void main(String[] args) throws Exception {
 
     	ServidorTarefas servidor = new ServidorTarefas();
@@ -45,7 +53,7 @@ public class ServidorTarefas {
 				// Thread threadCliente = new Thread(new DistribuidorTarefas(socket));
 				// threadCliente.start();
 
-				threadPool.execute(new DistribuidorTarefas(threadPool, socket, this));
+				threadPool.execute(new DistribuidorTarefas(threadPool, filaComandos, socket, this));
 			} catch (SocketException e) {
 				System.out.println("SocketException, está rodando?" + this.estaRodando);
 			}
@@ -57,6 +65,10 @@ public class ServidorTarefas {
         servidor.close();	
         threadPool.shutdown();
 	}
-
+    
+    private void iniciarConsumidor() {
+        TarefaConsumir tarefaConsumidora = new TarefaConsumir(filaComandos);
+        this.threadPool.execute(tarefaConsumidora);
+    }
 
 }
